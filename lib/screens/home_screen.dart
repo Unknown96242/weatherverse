@@ -26,7 +26,6 @@ class _HomeScreenState extends State<HomeScreen>
     with TickerProviderStateMixin {
 
   // ── Animations ──
-  late final AnimationController _robotCtrl;
   late final AnimationController _btnCtrl;
   late final AnimationController _particleCtrl;
   late final AnimationController _glowCtrl;
@@ -38,13 +37,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-
-
-
-    _robotCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1800))
-      ..repeat(reverse: true);
-
+    
     _btnCtrl = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1600))
       ..repeat(reverse: true);
@@ -57,8 +50,6 @@ class _HomeScreenState extends State<HomeScreen>
         vsync: this, duration: const Duration(seconds: 2))
       ..repeat(reverse: true);
 
-    _robotAnim = Tween<double>(begin: 0, end: -8).animate(
-        CurvedAnimation(parent: _robotCtrl, curve: Curves.easeInOut));
     _btnGlow   = Tween<double>(begin: 0.3, end: 1).animate(
         CurvedAnimation(parent: _btnCtrl, curve: Curves.easeInOut));
     _glowAnim  = Tween<double>(begin: 0.4, end: 1).animate(
@@ -67,7 +58,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void dispose() {
-    _robotCtrl.dispose();
     _btnCtrl.dispose();
     _particleCtrl.dispose();
     _glowCtrl.dispose();
@@ -267,20 +257,14 @@ class _HomeScreenState extends State<HomeScreen>
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         // Robot
-        AnimatedBuilder(
-          animation: _robotAnim,
-          builder: (_, __) => Transform.translate(
-            offset: Offset(0, _robotAnim.value),
-            child: SizedBox(
-              width: 90,
-              height:90 * 1.2,
-              child: Image.asset(
-                'assets/img/chatbot.gif',
-                width: 90,
-                height: 90,
-                fit: BoxFit.contain,
-              ),
-            ),
+        SizedBox(
+          width: 90,
+          height:90 * 1.2,
+          child: Image.asset(
+            'assets/img/chatbot.gif',
+            width: 90,
+            height: 90,
+            fit: BoxFit.contain,
           ),
         ),
         const SizedBox(width: 14),

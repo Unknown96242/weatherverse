@@ -26,13 +26,11 @@ class _HomeScreenState extends State<HomeScreen>
     with TickerProviderStateMixin {
 
   // ── Animations ──
-  late final AnimationController _globeCtrl;
   late final AnimationController _robotCtrl;
   late final AnimationController _btnCtrl;
   late final AnimationController _particleCtrl;
   late final AnimationController _glowCtrl;
 
-  late final Animation<double> _globeAnim;
   late final Animation<double> _robotAnim;
   late final Animation<double> _btnGlow;
   late final Animation<double> _glowAnim;
@@ -41,9 +39,7 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
 
-    _globeCtrl = AnimationController(
-        vsync: this, duration: const Duration(seconds: 8))
-      ..repeat();
+
 
     _robotCtrl = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1800))
@@ -61,7 +57,6 @@ class _HomeScreenState extends State<HomeScreen>
         vsync: this, duration: const Duration(seconds: 2))
       ..repeat(reverse: true);
 
-    _globeAnim = Tween<double>(begin: 0, end: 2 * pi).animate(_globeCtrl);
     _robotAnim = Tween<double>(begin: 0, end: -8).animate(
         CurvedAnimation(parent: _robotCtrl, curve: Curves.easeInOut));
     _btnGlow   = Tween<double>(begin: 0.3, end: 1).animate(
@@ -72,7 +67,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void dispose() {
-    _globeCtrl.dispose();
     _robotCtrl.dispose();
     _btnCtrl.dispose();
     _particleCtrl.dispose();

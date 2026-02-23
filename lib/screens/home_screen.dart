@@ -1,59 +1,84 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:meteo/components/navigation_button.dart';
+import 'package:meteo/screens/loader_screen.dart';
+import 'package:meteo/utils/images_constants.dart';
+import 'package:meteo/utils/utils_function.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
+import 'package:provider/provider.dart';
 
-import '../animations/aurora_waves.dart';
-import '../animations/particle_field.dart';
 import '../theme/app_colors.dart';
+import '../theme/theme_provider.dart';
 
 class HomeScreen extends StatefulWidget {
-  final VoidCallback onToggleTheme;
-  final ThemeMode themeMode;
 
   const HomeScreen({
     super.key,
-    required this.onToggleTheme,
-    required this.themeMode,
   });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with TickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
-  // ── Animations ──
-  late final AnimationController _btnCtrl;
-  late final AnimationController _particleCtrl;
-  late final AnimationController _glowCtrl;
+  late AnimationController _btnCtrl;
+  late AnimationController _particleCtrl;
+  late AnimationController _glowCtrl;
 
-  late final Animation<double> _robotAnim;
-  late final Animation<double> _btnGlow;
-  late final Animation<double> _glowAnim;
+  late Animation<double> _btnGlow;
+  late Animation<double> _glowAnim;
+
+  bool _globeVisible = false;
+
+  bool get _isDark => context.read<ThemeProvider>().isDark;
+
+  Color get _accentBtn => AppColors.neonBlue ;
+  Color get _accentPurpleBtn =>AppColors.neonPurple;
+
+  // Couleurs qui changent selon le thème
+  Color get _accent       => _isDark ? _accentBtn   : AppColors.lightBlue;
+  Color get _accentPurple => _isDark ? _accentPurpleBtn : AppColors.lightPurple;
+  Color get _accentGreen  => _isDark ? AppColors.neonGreen  : AppColors.lightGreen;
+  Color get _cardBg       => _isDark ? AppColors.glassDark  : AppColors.glassLight;
+  Color get _cardBorder   => _isDark ? AppColors.borderDark : AppColors.borderLight;
+  Color get _textMain     => _isDark ? Colors.white         : AppColors.textOnLight;
+  Color get _textSub      => _isDark? Colors.white.withOpacity(0.55) : AppColors.subTextOnLight;
+
 
   @override
   void initState() {
     super.initState();
-    
+
     _btnCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1600))
-      ..repeat(reverse: true);
+      vsync: this,
+      duration: const Duration(milliseconds: 1600),
+    )..repeat(reverse: true);
 
     _particleCtrl = AnimationController(
-        vsync: this, duration: const Duration(seconds: 6))
-      ..repeat();
+      vsync: this,
+      duration: const Duration(seconds: 6),
+    )..repeat();
 
     _glowCtrl = AnimationController(
-        vsync: this, duration: const Duration(seconds: 2))
-      ..repeat(reverse: true);
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
 
-    _btnGlow   = Tween<double>(begin: 0.3, end: 1).animate(
-        CurvedAnimation(parent: _btnCtrl, curve: Curves.easeInOut));
-    _glowAnim  = Tween<double>(begin: 0.4, end: 1).animate(
-        CurvedAnimation(parent: _glowCtrl, curve: Curves.easeInOut));
+    _btnGlow = Tween<double>(begin: 0.3, end: 1.0).animate(
+      CurvedAnimation(parent: _btnCtrl, curve: Curves.easeInOut),
+    );
+
+    _glowAnim = Tween<double>(begin: 0.4, end: 1.0).animate(
+      CurvedAnimation(parent: _glowCtrl, curve: Curves.easeInOut),
+    );
+
+    // On charge le globe un peu après le démarrage pour éviter le freeze
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) setState(() => _globeVisible = true);
+      });
+    });
   }
 
   @override
@@ -64,211 +89,247 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
-  bool get _isDark => widget.themeMode == ThemeMode.dark;
-
-  // ─── Gradient background ───
-  Gradient get _bgGradient => _isDark
-      ? const LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [AppColors.darkNavy, AppColors.darkPurple],
-  )
-      : const LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [AppColors.lightSky, AppColors.lightLavender],
-  );
-
-  Color get _cardBg  => _isDark ? AppColors.glassDark  : AppColors.glassLight;
-  Color get _cardBorder => _isDark ? AppColors.borderDark : AppColors.borderLight;
-  Color get _textMain => _isDark ? Colors.white : AppColors.darkNavy;
-  Color get _textSub  => _isDark
-      ? Colors.white.withOpacity(0.55)
-      : AppColors.darkNavy.withOpacity(0.5);
-
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final isDark = context.watch<ThemeProvider>().isDark;
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(gradient: _bgGradient),
-        child: Stack(
-          children: [
-            // ── Background particles ──
-            ParticleField(ctrl: _particleCtrl, isDark: _isDark),
 
-            // ── Aurora waves (dark only) ──
-            if (_isDark) AuroraWaves(ctrl: _particleCtrl),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image:isDark? AssetImage(ImagesConstants.bgHomeDark) : AssetImage(ImagesConstants.bgHomeLight),
+            fit: BoxFit.cover,
+          ),
 
-            // ── Main content ──
-            SafeArea(
-              child: Column(
-                children: [
-                  _buildStatusBar(),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 12),
-                            _buildLogo(),
-                            const SizedBox(height: 28),
-                            _buildGlobe(size),
-                            const SizedBox(height: 28),
-                            _buildRobotRow(),
-                            const SizedBox(height: 32),
-                            _buildCTAButton(),
-                            const SizedBox(height: 24),
-                            _buildQuickStats(),
-                            const SizedBox(height: 30),
-                          ],
-                        ),
-                      ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildStatusBar(),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 12),
+                        _buildLogo(),
+                        const SizedBox(height: 28),
+                        _buildGlobe(),
+                        const SizedBox(height: 28),
+                        _buildRobotSection(),
+                        const SizedBox(height: 32),
+                        navigationButton('LANCER L\'EXPÉRIENCE', LoaderScreen(),animation: _btnGlow),
+                        const SizedBox(height: 24),
+                        _buildStatsCards(),
+                        const SizedBox(height: 30),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // ─────────────────────────────────────────────
-  //  STATUS BAR
-  // ─────────────────────────────────────────────
+  // Barre du haut avec le bouton thème
   Widget _buildStatusBar() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-
-          GestureDetector(
-            onTap: widget.onToggleTheme,
-            child: AnimatedBuilder(
-              animation: _glowAnim,
-              builder: (_, __) => Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _cardBg,
-                  border: Border.all(color: _cardBorder),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.neonBlue.withOpacity(0.2 * _glowAnim.value),
-                      blurRadius: 12,
-                    ),
-                  ],
-                ),
-                child: Center(
+          AnimatedBuilder(
+            animation: _glowAnim,
+            builder: (context, _) {
+              return GestureDetector(
+                onTap: () => context.read<ThemeProvider>().toggle(),
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _cardBg,
+                    border: Border.all(color: _cardBorder),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _accent.withOpacity(0.2 * _glowAnim.value),
+                        blurRadius: 12,
+                      ),
+                    ],
+                  ),
                   child: Icon(
-                    !_isDark ? Icons.nights_stay_rounded : Icons.sunny,
+                    _isDark ? Icons.sunny : Icons.nights_stay_rounded,
+                    size: 18,
+                    color: _isDark ? _accent : _accentPurple,
                   ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ],
       ),
     );
   }
 
-  // ─────────────────────────────────────────────
-  //  LOGO
-  // ─────────────────────────────────────────────
+  // Logo de l'application
   Widget _buildLogo() {
-    return Column(
-      children: [
-        AnimatedBuilder(
-          animation: _glowAnim,
-          builder: (_, __) => ShaderMask(
-            shaderCallback: (bounds) => const LinearGradient(
-              colors: [AppColors.neonBlue, AppColors.neonPurple],
-            ).createShader(bounds),
-            child: Text(
-              'WEATHERVERSE',
-              style: GoogleFonts.orbitron(
-                fontSize: 26,
-                fontWeight: FontWeight.w900,
-                color: Colors.white,
-                letterSpacing: 3,
-                shadows: [
-                  Shadow(
-                    color: AppColors.neonBlue.withOpacity(_glowAnim.value),
-                    blurRadius: 20,
-                  ),
-                ],
+    return AnimatedBuilder(
+      animation: _glowAnim,
+      builder: (context, _) {
+        return Column(
+          children: [
+            ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                colors: [_accent, _accentPurple],
+              ).createShader(bounds),
+              child: Text(
+                'WEATHERVERSE',
+                style: GoogleFonts.orbitron(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  letterSpacing: 3,
+                  shadows: [
+                    Shadow(
+                      color: _accent.withOpacity(
+                        _glowAnim.value * (_isDark ? 1.0 : 0.4),
+                      ),
+                      blurRadius: 20,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'MÉTÉO DU FUTUR',
-          style: GoogleFonts.rajdhani(
-            fontSize: 11,
-            color: _textSub,
-            letterSpacing: 6,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
+            const SizedBox(height: 4),
+            Text(
+              'MÉTÉO DU FUTUR',
+              style: GoogleFonts.rajdhani(
+                fontSize: 11,
+                color: _textSub,
+                letterSpacing: 6,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  // ─────────────────────────────────────────────
-  //  GLOBE 3D
-  // ─────────────────────────────────────────────
-  Widget _buildGlobe(Size size) {
+  // Globe 3D avec placeholder pendant le chargement
+  Widget _buildGlobe() {
+    final width = MediaQuery.of(context).size.width;
+
     return SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: 240,
-        child: ModelViewer(
-          src: 'assets/models/earth.glb',
-          alt: 'Modèle 3D anime',
-          autoPlay: true,
-          autoRotate: true,
-          autoRotateDelay: 0,
-          rotationPerSecond: '30deg',
-          cameraControls: true,
-          shadowIntensity: 1,
-          exposure: 1.0,
-          // backgroundColor: const Color(0x00000000),
-          ar: false,
-
-          // Charge le JS depuis les assets locaux
-          relatedJs: '',
-          relatedCss: '',
+      width: width,
+      height: 240,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 700),
+        child: _globeVisible
+            ? RepaintBoundary(
+          key: const ValueKey('globe'),
+          child: ModelViewer(
+            src: 'assets/models/earth_compressed.glb',
+            alt: 'Globe terrestre 3D',
+            autoPlay: true,
+            autoRotate: true,
+            autoRotateDelay: 0,
+            rotationPerSecond: '6deg',
+            cameraOrbit: '0deg 90deg 105%',
+            cameraControls: false,
+            disablePan: true,
+            disableZoom: true,
+            shadowIntensity: 0.3,
+            exposure: 0.95,
+            interpolationDecay: 300,
+            ar: false,
+            relatedJs: '',
+            relatedCss: '',
+          ),
         )
+            : _buildGlobePlaceholder(),
+      ),
     );
   }
 
-  // ─────────────────────────────────────────────
-  //  ROBOT ROW
-  // ─────────────────────────────────────────────
-  Widget _buildRobotRow() {
+  // Globe factice affiché pendant le chargement du .glb
+  Widget _buildGlobePlaceholder() {
+    return Center(
+      key: const ValueKey('placeholder'),
+      child: AnimatedBuilder(
+        animation: _glowAnim,
+        builder: (context, _) {
+          return Container(
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const RadialGradient(
+                center: Alignment(-0.4, -0.4),
+                colors: [
+                  Color(0xFF00667A),
+                  Color(0xFF1a6b3c),
+                  Color(0xFF0A3D6B),
+                  Color(0xFF1A1A6B),
+                ],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: _accent.withOpacity(0.45 * _glowAnim.value),
+                  blurRadius: 40,
+                  spreadRadius: 4,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 1.5,
+                    color: _accent.withOpacity(0.6),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'CHARGEMENT…',
+                  style: GoogleFonts.orbitron(
+                    fontSize: 8,
+                    color: Colors.white.withOpacity(0.4),
+                    letterSpacing: 2,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // Robot + bulle de dialogue
+  Widget _buildRobotSection() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        // Robot
         SizedBox(
           width: 90,
-          height:90 * 1.2,
+          height: 108,
           child: Image.asset(
-            'assets/img/chatbot.gif',
-            width: 90,
-            height: 90,
+            ImagesConstants.robot,
             fit: BoxFit.contain,
+            filterQuality: FilterQuality.low,
           ),
         ),
         const SizedBox(width: 14),
-        // Speech bubble
         Expanded(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -283,7 +344,7 @@ class _HomeScreenState extends State<HomeScreen>
               border: Border.all(color: _cardBorder),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.neonBlue.withOpacity(0.08),
+                  color: _accent.withOpacity(0.08),
                   blurRadius: 15,
                 ),
               ],
@@ -291,8 +352,27 @@ class _HomeScreenState extends State<HomeScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 6, height: 6,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _accentGreen,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'BLOBI',
+                      style: GoogleFonts.orbitron(
+                          fontSize: 8, color: _accentGreen, letterSpacing: 2, fontWeight: FontWeight.w600
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
                 Text(
-                  'Bonjour ! Prêt pour la météo ?',
+                  'Bonjour ! Je suis ton ami BLOBI',
                   style: GoogleFonts.rajdhani(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -301,10 +381,19 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
+                  'Prêt pour la météo? ',
+                  style: GoogleFonts.rajdhani(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: _textMain,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
                   'Je surveille 5 villes pour toi en temps réel !',
                   style: GoogleFonts.rajdhani(
                     fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     color: _textSub,
                   ),
                 ),
@@ -316,120 +405,21 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // ─────────────────────────────────────────────
-  //  CTA BUTTON
-  // ─────────────────────────────────────────────
-  Widget _buildCTAButton() {
-    return AnimatedBuilder(
-      animation: _btnGlow,
-      builder: (_, __) => GestureDetector(
-        onTap: () {
-          // TODO: navigate to LoadingScreen
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: AppColors.darkNavy,
-              content: Text(
-                'Lancement en cours…',
-                style: GoogleFonts.orbitron(color: AppColors.neonBlue),
-              ),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        },
-        child: Container(
-          width: double.infinity,
-          height: 62,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            gradient: LinearGradient(
-              colors: [
-                AppColors.neonBlue.withOpacity(0.12),
-                AppColors.neonPurple.withOpacity(0.12),
-              ],
-            ),
-            border: Border.all(
-              color: AppColors.neonBlue.withOpacity(0.6 + 0.4 * _btnGlow.value),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.neonBlue.withOpacity(0.3 * _btnGlow.value),
-                blurRadius: 25,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Shimmer sweep
-              ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: AnimatedBuilder(
-                  animation: _particleCtrl,
-                  builder: (_, __) => Transform.translate(
-                    offset: Offset(
-                      ((_particleCtrl.value * 2 - 1) * 400) - 80,
-                      0,
-                    ),
-                    child: Container(
-                      width: 80,
-                      height: 62,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.transparent,
-                            AppColors.neonBlue.withOpacity(0.25),
-                            Colors.transparent,
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              // Label
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'LANCER L\'EXPÉRIENCE',
-                    style: GoogleFonts.orbitron(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.neonBlue,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Icon(Icons.arrow_forward,
-                      color: AppColors.neonBlue, size: 18),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ─────────────────────────────────────────────
-  //  QUICK STATS CARDS
-  // ─────────────────────────────────────────────
-  Widget _buildQuickStats() {
+  Widget _buildStatsCards() {
     final stats = [
-      _StatData('🌍', '5', 'VILLES'),
-      _StatData('⏱️', '5s', 'INTERVALLE'),
-      _StatData('📡', 'LIVE', 'DONNÉES'),
+      {'icon': '🌍', 'value': '5',    'label': 'VILLES'},
+      {'icon': '⏱️', 'value': '5s',   'label': 'INTERVALLE'},
+      {'icon': '📡', 'value': 'LIVE', 'label': 'DONNÉES'},
     ];
 
     return Row(
-      children: stats.map((s) {
+      children: List.generate(stats.length, (i) {
+        final s = stats[i];
         return Expanded(
           child: Container(
             margin: EdgeInsets.only(
-              left: stats.indexOf(s) == 0 ? 0 : 6,
-              right: stats.indexOf(s) == 2 ? 0 : 6,
+              left:  i == 0 ? 0 : 6,
+              right: i == stats.length - 1 ? 0 : 6,
             ),
             padding: const EdgeInsets.symmetric(vertical: 16),
             decoration: BoxDecoration(
@@ -438,28 +428,29 @@ class _HomeScreenState extends State<HomeScreen>
               border: Border.all(color: _cardBorder),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.neonPurple.withOpacity(0.07),
+                  color: _accentPurple.withOpacity(0.07),
                   blurRadius: 12,
                 ),
               ],
             ),
             child: Column(
               children: [
-                Text(s.icon, style: const TextStyle(fontSize: 22)),
+                Text(s['icon']!, style: const TextStyle(fontSize: 22)),
                 const SizedBox(height: 6),
                 Text(
-                  s.value,
+                  s['value']!,
                   style: GoogleFonts.orbitron(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.neonBlue,
+                    color: _accent,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  s.label,
+                  s['label']!,
                   style: GoogleFonts.orbitron(
                     fontSize: 9,
+                    fontWeight: FontWeight.w500,
                     letterSpacing: 1.5,
                     color: _textSub,
                   ),
@@ -468,21 +459,7 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ),
         );
-      }).toList(),
+      }),
     );
   }
-
-}
-
-
-
-
-// ─────────────────────────────────────────────
-//  DATA MODEL
-// ─────────────────────────────────────────────
-class _StatData {
-  final String icon;
-  final String value;
-  final String label;
-  const _StatData(this.icon, this.value, this.label);
 }

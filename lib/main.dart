@@ -1,16 +1,20 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:meteo/screens/home_screen.dart';
 import 'package:meteo/theme/app_theme.dart';
-import 'package:model_viewer_plus/model_viewer_plus.dart';
 
-import 'animations/aurora_waves.dart';
-import 'animations/particle_field.dart';
+
+
+import 'package:provider/provider.dart';
+import 'theme/theme_provider.dart';
 
 
 void main() {
-  runApp(const WeatherVerseApp());
+  runApp(
+    ChangeNotifierProvider(
+    create: (_) => ThemeProvider(),
+    child: const WeatherVerseApp(),
+  ),
+  );
 }
 
 class WeatherVerseApp extends StatefulWidget {
@@ -21,24 +25,18 @@ class WeatherVerseApp extends StatefulWidget {
 }
 
 class _WeatherVerseAppState extends State<WeatherVerseApp> {
-  ThemeMode _themeMode = ThemeMode.dark;
-
-  void _toggleTheme() {
-    setState(() {
-      _themeMode =
-      _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+
     return MaterialApp(
       title: 'WeatherVerse',
       debugShowCheckedModeBanner: false,
-      themeMode: _themeMode,
+      themeMode: themeProvider.themeMode,
       darkTheme: AppTheme.dark(),
       theme: AppTheme.light(),
-      home: HomeScreen(onToggleTheme: _toggleTheme, themeMode: _themeMode),
+      home: HomeScreen(),
     );
   }
 }

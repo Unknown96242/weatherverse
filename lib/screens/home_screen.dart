@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    
+
     _btnCtrl = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1600))
       ..repeat(reverse: true);
@@ -243,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen>
           ar: false,
 
           // Charge le JS depuis les assets locaux
-          relatedJs: '',
+          relatedJs: 'assets/model-viewer.min.js',
           relatedCss: '',
         )
     );
@@ -323,9 +323,9 @@ class _HomeScreenState extends State<HomeScreen>
     return AnimatedBuilder(
       animation: _btnGlow,
       builder: (_, __) => GestureDetector(
-        onTap: () {
+        onTap: () async {
           // TODO: navigate to LoadingScreen
-          ScaffoldMessenger.of(context).showSnackBar(
+          await ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               backgroundColor: AppColors.darkNavy,
               content: Text(
@@ -335,6 +335,7 @@ class _HomeScreenState extends State<HomeScreen>
               duration: const Duration(seconds: 2),
             ),
           );
+
         },
         child: Container(
           width: double.infinity,

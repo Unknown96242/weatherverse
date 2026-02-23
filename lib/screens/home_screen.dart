@@ -326,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           child: Image.asset(
             ImagesConstants.robot,
             fit: BoxFit.contain,
-            filterQuality: FilterQuality.low,
+            filterQuality: FilterQuality.medium,
           ),
         ),
         const SizedBox(width: 14),

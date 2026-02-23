@@ -281,24 +281,22 @@ class _LoaderScreenState extends State<LoaderScreen> {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              !_isDone? Image.asset(
+                ImagesConstants.weatherLoad,
+                )
+                  :
+              Text(''),
+              // const SizedBox(height: 4),
               Text(
                 '$percent%',
                 style: GoogleFonts.orbitron(
-                  fontSize: 48,
+                  fontSize: _isDone? 48 : 20,
                   fontWeight: FontWeight.w900,
                   color: _accent,
                 ),
               ),
-              Text(
-                'DONNÉES',
-                style: GoogleFonts.orbitron(
-                  fontSize: 9,
-                  color: _textSub,
-                  letterSpacing: 3,
-                ),
-              ),
               if (_isDone) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 GestureDetector(
                   onTap: _startLoading,
                   child: Container(

@@ -1,7 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:meteo/screens/home_screen.dart';
 import 'package:meteo/theme/app_theme.dart';
-
+import 'package:device_preview/device_preview.dart';
 
 
 import 'package:provider/provider.dart';
@@ -10,10 +11,14 @@ import 'theme/theme_provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-    create: (_) => ThemeProvider(),
-    child: const WeatherVerseApp(),
-  ),
+      DevicePreview(
+        enabled: !kReleaseMode,
+        builder: (context) =>
+        ChangeNotifierProvider(
+          create: (_) => ThemeProvider(),
+          child: const WeatherVerseApp(),
+        ),
+      ),
   );
 }
 

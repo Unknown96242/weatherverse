@@ -66,6 +66,7 @@ class _VilleScreenState extends State<VilleScreen>
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
+          constraints:BoxConstraints( minHeight:  MediaQuery.of(context).size.height),
           decoration: BoxDecoration(
             image: DecorationImage(
               image: _isDark
@@ -75,39 +76,36 @@ class _VilleScreenState extends State<VilleScreen>
             ),
           ),
           child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildLogo(),
-                Padding(
-                  padding: EdgeInsetsGeometry.symmetric(
-                    horizontal: 24,
-                    vertical: 23,
+            child: Padding(
+              padding: EdgeInsetsGeometry.symmetric(
+                    horizontal: 17,
+                    vertical: 17
                   ),
-                  child: Column(
-                    spacing: 24,
-                    children: [
-                      _buildRobotSection(),
-                      ListView.builder(
-                        physics: ClampingScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: WeatherStorage.data.length,
-                        itemBuilder: (context, index) {
-                          CityWeather c = WeatherStorage.data[index];
-                          return Column(
-                            children: [cityShow(c), SizedBox(height: 15)],
-                          );
-                        },
-                      ),
-                      navigationButton(
-                        "RECOMMENCER L'EXPERIENCE",
-                        LoaderScreen(),
-                        icon: Icons.restart_alt,
-                      ),
-                    ],
+              child: Column(
+                spacing: 10,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildLogo(),
+                  _buildRobotSection(),
+                  ListView.builder(
+                    physics: ClampingScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: WeatherStorage.data.length,
+                    itemBuilder: (context, index) {
+                      CityWeather c = WeatherStorage.data[index];
+                      return Column(
+                        children: [cityShow(c), SizedBox(height: 15)],
+                      );
+                    },
                   ),
-                ),
-              ],
+                  navigationButton(
+                    "RECOMMENCER L'EXPERIENCE",
+                    LoaderScreen(),
+                    icon: Icons.restart_alt,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -116,7 +114,7 @@ class _VilleScreenState extends State<VilleScreen>
   }
 
   Widget cityShow(CityWeather c) {
-    return GestureDetector(
+    return InkWell(
       onTap: () => {UtilsFunction.navigation(context, HomeScreen())},
       child: Container(
         decoration: BoxDecoration(
@@ -128,8 +126,7 @@ class _VilleScreenState extends State<VilleScreen>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),**/
-          color: AppColors.glassDark,
-          // effet translucide
+          color: AppColors.glassDark.withOpacity(.2),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: AppColors.glassDark, // contour léger
@@ -143,15 +140,26 @@ class _VilleScreenState extends State<VilleScreen>
             children: [
               Row(
                 children: [
-                  weatherIcon(c.temps),
+                  Image.network(
+                    c.iconUrl,
+                    width: 40,
+                    height: 40,
+                  ),
                   SizedBox(width: 8),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(c.city, style: TextStyle(color: Colors.white)),
-                      Text(
-                        c.condition,
-                        style: TextStyle(color: Colors.white70),
+                      Text(c.city, style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.w600)),
+                      SizedBox(height: 15,),
+                      Row(
+                        children: [
+                          Icon(Icons.circle,color: _accentGreen,size: 10,),
+                          SizedBox(width: 5,),
+                          Text(
+                            c.condition,
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -161,11 +169,12 @@ class _VilleScreenState extends State<VilleScreen>
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    "${c.temperature}°C",
-                    style: TextStyle(color: Colors.white),
+                    "${c.temperature}°",
+                    style: TextStyle(color: Colors.white,fontSize: 25,fontWeight: FontWeight.w600),
                   ),
+                  SizedBox(height: 15,),
                   Text(
-                    "↑${c.tempMax}°C ↓${c.tempMin}°C",
+                    "↑${c.tempMax}° ↓${c.tempMin}°",
                     style: TextStyle(color: Colors.white70),
                   ),
                 ],
@@ -224,40 +233,6 @@ class _VilleScreenState extends State<VilleScreen>
         );
       },
     );
-  }
-
-  Widget weatherIcon(String main) {
-    double taille = 30;
-    switch (main) {
-      case "Thunderstorm":
-        return Icon(WeatherIcons.cloudy, color: Colors.yellow,size: taille,);
-      case "Drizzle":
-        return Icon(WeatherIcons.hail, color: Colors.blue,size: taille);
-      case "Rain":
-        return Icon(
-          WeatherIcons.rain_wind,
-          color: Colors.blueAccent,
-          size: taille
-        );
-     case "Mist":
-      case "Fog":
-      case "Haze":
-        return Icon(WeatherIcons.fog, color: Colors.grey,size: taille);
-      case "Smoke":
-      case "Dust":
-      case "Sand":
-      case "Ash":
-        return Icon(FontAwesomeIcons.wind, color: Colors.brown,size: taille);
-      case "Clear":
-        return Icon(Icons;, color: Colors.orange,size: taille);
-      case "Clouds":
-        return Icon(WeatherIcons.cloudy, color: Colors.grey,size: taille);
-      case "Tornado":
-      case "Squall":
-        return Icon(FontAwesomeIcons.wind, color: Colors.black,size: taille);
-      default:
-        return Icon(FontAwesomeIcons.question, color: Colors.white,size: taille);
-    }
   }
 
   // Robot + bulle de dialogue

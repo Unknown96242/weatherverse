@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:meteo/screens/ville_screen.dart';
 import 'package:meteo/utils/utils_function.dart';
@@ -201,6 +202,8 @@ class _LoaderScreenState extends State<LoaderScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
+              _errorMessage!=null ? 'Erreur lors du chargement des villes'
+                  :
               _isDone
                   ? '${_loadedCities.length} villes chargées avec succès' 
                   : _loadedCities.isEmpty
@@ -210,7 +213,7 @@ class _LoaderScreenState extends State<LoaderScreen> {
             ),
             _isDone ? Container(
                 margin: EdgeInsets.only(left: 4),
-                child: Icon(Icons.check, color: _accentGreen))
+                child: _errorMessage != null ? Icon(FontAwesomeIcons.times, color: Colors.red, size: 20,) : Icon(Icons.check, color: _accentGreen))
                 :
                 Text('')
             ,
@@ -327,7 +330,7 @@ class _LoaderScreenState extends State<LoaderScreen> {
   Widget _buildCityBadges() {
     if (_errorMessage != null) {
       return Text(
-        'Impossible de charger les villes',
+        _errorMessage.toString(),
         style: GoogleFonts.rajdhani(fontSize: 13, color: Colors.redAccent),
       );
     }

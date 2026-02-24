@@ -26,7 +26,7 @@ class CityWeather {
       tempMax: json['main']['temp_max'],
       tempMin: json['main']['temp_min'],
       temps: json['weather'][0]['main'],
-      icon: json['']
+      icon: json['weather'][0]['icon']
     );
   }
 

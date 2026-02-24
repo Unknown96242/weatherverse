@@ -333,7 +333,7 @@ class _LoaderScreenState extends State<LoaderScreen> {
   Widget _buildCityBadges() {
     if (_errorMessage != null) {
       return Text(
-        'Impossible de charger les villes',
+        _errorMessage.toString(),
         style: GoogleFonts.rajdhani(fontSize: 13, color: Colors.redAccent),
       );
     }

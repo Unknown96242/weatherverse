@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:meteo/components/navigation_button.dart';
@@ -63,13 +64,16 @@ class _VilleScreenState extends State<VilleScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.watch<ThemeProvider>().isDark;
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          constraints:BoxConstraints( minHeight:  MediaQuery.of(context).size.height),
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height,
+          ),
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: _isDark
+              image: isDark
                   ? AssetImage(ImagesConstants.bgHomeDark)
                   : AssetImage(ImagesConstants.bgHomeLight),
               fit: BoxFit.cover,
@@ -78,15 +82,15 @@ class _VilleScreenState extends State<VilleScreen>
           child: SafeArea(
             child: Padding(
               padding: EdgeInsetsGeometry.symmetric(
-                    horizontal: 17,
-                    vertical: 17
-                  ),
+                horizontal: 15,
+                vertical: 17,
+              ),
               child: Column(
                 spacing: 10,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildLogo(),
+                  _buildTopBar(),
                   _buildRobotSection(),
                   ListView.builder(
                     physics: ClampingScrollPhysics(),
@@ -94,9 +98,7 @@ class _VilleScreenState extends State<VilleScreen>
                     itemCount: WeatherStorage.data.length,
                     itemBuilder: (context, index) {
                       CityWeather c = WeatherStorage.data[index];
-                      return Column(
-                        children: [cityShow(context,c), SizedBox(height: 15)],
-                      );
+                      return Column(children: [cityShow(context, c)]);
                     },
                   ),
                   navigationButton(
@@ -110,6 +112,30 @@ class _VilleScreenState extends State<VilleScreen>
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTopBar() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        InkWell(
+          onTap: () => {UtilsFunction.navigation(context, HomeScreen())},
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: AppColors.glassDark.withOpacity(.2),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(CupertinoIcons.arrow_left),
+            ),
+          ),
+        ),
+        _buildLogo(),
+        _buildStatusBar(),
+      ],
     );
   }
 
@@ -146,7 +172,7 @@ class _VilleScreenState extends State<VilleScreen>
               children: [
                 Row(
                   children: [
-                    Image.network(c.iconUrl,width: 50,height: 50,),
+                    Image.network(c.iconUrl, width: 50, height: 50),
                     const SizedBox(width: 14),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,7 +243,7 @@ class _VilleScreenState extends State<VilleScreen>
                   textAlign: TextAlign.center,
                   'WEATHERVERSE',
                   style: GoogleFonts.orbitron(
-                    fontSize: 26,
+                    fontSize: 16,
                     fontWeight: FontWeight.w900,
                     color: Colors.white,
                     letterSpacing: 3,
@@ -246,6 +272,46 @@ class _VilleScreenState extends State<VilleScreen>
           ),
         );
       },
+    );
+  }
+
+  // Barre du haut avec le bouton thème
+  Widget _buildStatusBar() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        AnimatedBuilder(
+          animation: _glowAnim,
+          builder: (context, _) {
+            return GestureDetector(
+              onTap: () =>{
+                context.read<ThemeProvider>().toggle(),
+                print(_isDark),
+              },
+              child: Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _cardBg,
+                  border: Border.all(color: _cardBorder),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _accent.withOpacity(0.2 * _glowAnim.value),
+                      blurRadius: 12,
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  _isDark ? Icons.sunny : Icons.nights_stay_rounded,
+                  size: 18,
+                  color: _isDark ? _accent : _accentPurple,
+                ),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 

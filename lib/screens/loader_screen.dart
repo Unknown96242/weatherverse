@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:meteo/screens/ville_screen.dart';
+import 'package:meteo/utils/utils_function.dart';
 import 'package:provider/provider.dart';
 
 import '../model/city_weather.dart';
@@ -118,6 +120,7 @@ class _LoaderScreenState extends State<LoaderScreen> {
       setState(() {
         _progress = 1.0;
         _isDone   = true;
+        UtilsFunction.redirectAfterDelay(context, VilleScreen());
       });
       _messageTimer?.cancel();
     }).catchError((e) {
@@ -168,16 +171,7 @@ class _LoaderScreenState extends State<LoaderScreen> {
                 _buildCityBadges(),
                 const Spacer(),
                 _buildRobotSection(),
-                const SizedBox(height: 20),
-                if (_isDone && _errorMessage == null) ...[
-                  navigationButton(
-                    "Continuer",
-                    HomeScreen(),
-                    mainColor: _accent,
-                    secondColor: _accentPurple,
-                  ),
-                  const SizedBox(height: 30),
-                ],
+                const SizedBox(height: 10),
               ],
             ),
           ),
@@ -504,4 +498,6 @@ class _LoaderScreenState extends State<LoaderScreen> {
       ),
     );
   }
+
+
 }

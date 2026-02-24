@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_colors.dart';
 import '../utils/utils_function.dart';
 
-Widget navigationButton(String label, Widget destination, {Animation<double>? animation , Color mainColor = AppColors.neonBlue, Color secondColor = AppColors.neonPurple}) {
+Widget navigationButton(String label, Widget destination, {Animation<double>? animation , Color mainColor = AppColors.neonBlue, Color secondColor = AppColors.neonPurple, IconData icon=Icons.arrow_forward}) {
 
   final anim = animation ?? AlwaysStoppedAnimation(1.0);
 
@@ -51,7 +51,7 @@ Widget navigationButton(String label, Widget destination, {Animation<double>? an
                 ),
               ),
               const SizedBox(width: 10),
-              Icon(Icons.arrow_forward, color: mainColor, size: 18),
+              Icon(icon, color: mainColor, size: 18),
             ],
           ),
         ),

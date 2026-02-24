@@ -120,14 +120,15 @@ class _VilleScreenState extends State<VilleScreen>
       onTap: () => {UtilsFunction.navigation(context, HomeScreen())},
       child: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
+          /**gradient: LinearGradient(
             colors: [
               Colors.blue.withOpacity(0.6),
               Colors.purple.withOpacity(0.6),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-          ),
+          ),**/
+          color: AppColors.glassDark,
           // effet translucide
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
@@ -248,7 +249,7 @@ class _VilleScreenState extends State<VilleScreen>
       case "Ash":
         return Icon(FontAwesomeIcons.wind, color: Colors.brown,size: taille);
       case "Clear":
-        return Icon(WeatherIcons.day_sunny, color: Colors.orange,size: taille);
+        return Icon(Icons;, color: Colors.orange,size: taille);
       case "Clouds":
         return Icon(WeatherIcons.cloudy, color: Colors.grey,size: taille);
       case "Tornado":

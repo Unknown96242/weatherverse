@@ -10,7 +10,7 @@ class WeatherService {
 
   static const List<String> _allCities = [
     'Dakar', 'Thiès', 'Saint-Louis', 'Ziguinchor', 'Touba',
-    'Kolda', 'Matam', 'Fatick', 'Sédhiou', 'Kédougou',
+    'Kolda', 'Matam', 'Sédhiou', 'Kédougou',
   ];
 
   List<String> _villeAleatoire() {

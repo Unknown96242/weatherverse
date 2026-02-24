@@ -79,8 +79,10 @@ class _VilleScreenState extends State<VilleScreen>
             child: Padding(
               padding: EdgeInsetsGeometry.symmetric(
                     horizontal: 17,
+                    vertical: 17
                   ),
               child: Column(
+                spacing: 10,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -93,7 +95,7 @@ class _VilleScreenState extends State<VilleScreen>
                     itemBuilder: (context, index) {
                       CityWeather c = WeatherStorage.data[index];
                       return Column(
-                        children: [cityShow(c), SizedBox(height: 15)],
+                        children: [cityShow(context,c), SizedBox(height: 15)],
                       );
                     },
                   ),
@@ -111,61 +113,87 @@ class _VilleScreenState extends State<VilleScreen>
     );
   }
 
-  Widget cityShow(CityWeather c) {
-    return GestureDetector(
-      onTap: () => {UtilsFunction.navigation(context, HomeScreen())},
-      child: Container(
-        decoration: BoxDecoration(
-          // gradient: LinearGradient(
-          //   colors: [
-          //     Colors.blue.withOpacity(0.6),
-          //     Colors.purple.withOpacity(0.6),
-          //   ],
-          //   begin: Alignment.topLeft,
-          //   end: Alignment.bottomRight,
-          // ),
-          // effet translucide
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: AppColors.glassDark, // contour léger
-            width: 1.5,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  weatherIcon(c.temps),
-                  SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(c.city, style: TextStyle(color: Colors.white)),
-                      Text(
-                        c.condition,
-                        style: TextStyle(color: Colors.white70),
+  Widget cityShow(BuildContext context, CityWeather c) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(22),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(22),
+
+              // 🎨 Dégradé sombre translucide
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF1E2A47).withOpacity(0.30),
+                  Color(0xFF111827).withOpacity(0.20),
+                ],
+              ),
+
+              // ✨ Fine light border comme sur l'image
+              border: Border.all(
+                color: Colors.white.withOpacity(0.12),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Image.network(c.iconUrl,width: 50,height: 50,),
+                    const SizedBox(width: 14),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          c.city,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          c.condition,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "${c.temperature}°",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w500,
                       ),
-                    ],
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    "${c.temperature}°C",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  Text(
-                    "↑${c.tempMax}°C ↓${c.tempMin}°C",
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                ],
-              ),
-            ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "↑${c.tempMax}° ↓${c.tempMin}°",
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -219,40 +247,6 @@ class _VilleScreenState extends State<VilleScreen>
         );
       },
     );
-  }
-
-  Widget weatherIcon(String main) {
-    double taille = 30;
-    switch (main) {
-      case "Thunderstorm":
-        return Icon(WeatherIcons.cloudy, color: Colors.yellow,size: taille,);
-      case "Drizzle":
-        return Icon(WeatherIcons.hail, color: Colors.blue,size: taille);
-      case "Rain":
-        return Icon(
-          WeatherIcons.rain_wind,
-          color: Colors.blueAccent,
-          size: taille
-        );
-     case "Mist":
-      case "Fog":
-      case "Haze":
-        return Icon(WeatherIcons.fog, color: Colors.grey,size: taille);
-      case "Smoke":
-      case "Dust":
-      case "Sand":
-      case "Ash":
-        return Icon(FontAwesomeIcons.wind, color: Colors.brown,size: taille);
-      case "Clear":
-        return Icon(WeatherIcons.day_sunny, color: Colors.orange,size: taille);
-      case "Clouds":
-        return Icon(WeatherIcons.cloudy, color: Colors.grey,size: taille);
-      case "Tornado":
-      case "Squall":
-        return Icon(FontAwesomeIcons.wind, color: Colors.black,size: taille);
-      default:
-        return Icon(FontAwesomeIcons.question, color: Colors.white,size: taille);
-    }
   }
 
   // Robot + bulle de dialogue

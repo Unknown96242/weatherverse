@@ -5,6 +5,7 @@ class CityWeather {
   final double tempMax;
   final double tempMin;
   final String temps;
+  final String icon;
 
   CityWeather({
     required this.city,
@@ -12,7 +13,8 @@ class CityWeather {
     required this.condition,
     required this.tempMax,
     required this.tempMin,
-    required this.temps
+    required this.temps,
+    required this.icon,
   });
 
   factory CityWeather.
@@ -24,6 +26,9 @@ class CityWeather {
       tempMax: json['main']['temp_max'],
       tempMin: json['main']['temp_min'],
       temps: json['weather'][0]['main'],
+      icon: json['weather'][0]['icon']
     );
   }
+
+  String get iconUrl => "https://openweathermap.org/img/wn/$icon@2x.png";
 }

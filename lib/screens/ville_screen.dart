@@ -46,6 +46,7 @@ class _VilleScreenState extends State<VilleScreen>
       ? Colors.white.withOpacity(0.13)
       : AppColors.lightPurple.withOpacity(0.25);
 
+
   @override
   void initState() {
     // TODO: implement initState
@@ -106,6 +107,8 @@ class _VilleScreenState extends State<VilleScreen>
                       "RECOMMENCER L'EXPERIENCE",
                       LoaderScreen(),
                       icon: Icons.restart_alt,
+                      mainColor: _accent,
+                      secondColor: _accentPurple
                     ),
                   ],
                 ),

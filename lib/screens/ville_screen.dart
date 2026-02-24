@@ -66,6 +66,7 @@ class _VilleScreenState extends State<VilleScreen>
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
+          constraints:BoxConstraints( minHeight:  MediaQuery.of(context).size.height),
           decoration: BoxDecoration(
             image: DecorationImage(
               image: _isDark
@@ -75,39 +76,34 @@ class _VilleScreenState extends State<VilleScreen>
             ),
           ),
           child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildLogo(),
-                Padding(
-                  padding: EdgeInsetsGeometry.symmetric(
-                    horizontal: 24,
-                    vertical: 23,
+            child: Padding(
+              padding: EdgeInsetsGeometry.symmetric(
+                    horizontal: 17,
                   ),
-                  child: Column(
-                    spacing: 24,
-                    children: [
-                      _buildRobotSection(),
-                      ListView.builder(
-                        physics: ClampingScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: WeatherStorage.data.length,
-                        itemBuilder: (context, index) {
-                          CityWeather c = WeatherStorage.data[index];
-                          return Column(
-                            children: [cityShow(c), SizedBox(height: 15)],
-                          );
-                        },
-                      ),
-                      navigationButton(
-                        "RECOMMENCER L'EXPERIENCE",
-                        LoaderScreen(),
-                        icon: Icons.restart_alt,
-                      ),
-                    ],
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildLogo(),
+                  _buildRobotSection(),
+                  ListView.builder(
+                    physics: ClampingScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: WeatherStorage.data.length,
+                    itemBuilder: (context, index) {
+                      CityWeather c = WeatherStorage.data[index];
+                      return Column(
+                        children: [cityShow(c), SizedBox(height: 15)],
+                      );
+                    },
                   ),
-                ),
-              ],
+                  navigationButton(
+                    "RECOMMENCER L'EXPERIENCE",
+                    LoaderScreen(),
+                    icon: Icons.restart_alt,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -120,14 +116,14 @@ class _VilleScreenState extends State<VilleScreen>
       onTap: () => {UtilsFunction.navigation(context, HomeScreen())},
       child: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.blue.withOpacity(0.6),
-              Colors.purple.withOpacity(0.6),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          // gradient: LinearGradient(
+          //   colors: [
+          //     Colors.blue.withOpacity(0.6),
+          //     Colors.purple.withOpacity(0.6),
+          //   ],
+          //   begin: Alignment.topLeft,
+          //   end: Alignment.bottomRight,
+          // ),
           // effet translucide
           borderRadius: BorderRadius.circular(12),
           border: Border.all(

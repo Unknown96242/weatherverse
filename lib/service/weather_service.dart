@@ -27,7 +27,7 @@ class WeatherService {
     for (int i = 0; i < cities.length; i++) {
       try {
         final city = await _fetchCity(cities[i]).timeout(
-          const Duration(seconds: 10),
+          const Duration(seconds: 20),
         );
 
         if (city != null) {

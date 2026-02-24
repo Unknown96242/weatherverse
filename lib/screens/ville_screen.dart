@@ -64,51 +64,55 @@ class _VilleScreenState extends State<VilleScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          constraints:BoxConstraints( minHeight:  MediaQuery.of(context).size.height),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: _isDark
-                  ? AssetImage(ImagesConstants.bgHomeDark)
-                  : AssetImage(ImagesConstants.bgHomeLight),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              _isDark
+                  ? ImagesConstants.bgHomeDark
+                  : ImagesConstants.bgHomeLight,
               fit: BoxFit.cover,
             ),
           ),
-          child: SafeArea(
-            child: Padding(
-              padding: EdgeInsetsGeometry.symmetric(
-                    horizontal: 17,
-                    vertical: 17
-                  ),
-              child: Column(
-                spacing: 10,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildLogo(),
-                  _buildRobotSection(),
-                  ListView.builder(
-                    physics: ClampingScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: WeatherStorage.data.length,
-                    itemBuilder: (context, index) {
-                      CityWeather c = WeatherStorage.data[index];
-                      return Column(
-                        children: [cityShow(context,c), SizedBox(height: 15)],
-                      );
-                    },
-                  ),
-                  navigationButton(
-                    "RECOMMENCER L'EXPERIENCE",
-                    LoaderScreen(),
-                    icon: Icons.restart_alt,
-                  ),
-                ],
+
+          SingleChildScrollView(
+          child: Container(
+            constraints:BoxConstraints( minHeight:  MediaQuery.of(context).size.height),
+            child: SafeArea(
+              child: Padding(
+                padding: EdgeInsetsGeometry.symmetric(
+                      horizontal: 17,
+                      vertical: 17
+                    ),
+                child: Column(
+                  spacing: 10,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildLogo(),
+                    _buildRobotSection(),
+                    ListView.builder(
+                      physics: ClampingScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: WeatherStorage.data.length,
+                      itemBuilder: (context, index) {
+                        CityWeather c = WeatherStorage.data[index];
+                        return Column(
+                          children: [cityShow(context,c)],
+                        );
+                      },
+                    ),
+                    navigationButton(
+                      "RECOMMENCER L'EXPERIENCE",
+                      LoaderScreen(),
+                      icon: Icons.restart_alt,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
+        )],
       ),
     );
   }
@@ -125,7 +129,7 @@ class _VilleScreenState extends State<VilleScreen>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(22),
 
-              // 🎨 Dégradé sombre translucide
+              //Dégradé sombre translucide
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -135,7 +139,7 @@ class _VilleScreenState extends State<VilleScreen>
                 ],
               ),
 
-              // ✨ Fine light border comme sur l'image
+              // Fine light border
               border: Border.all(
                 color: Colors.white.withOpacity(0.12),
                 width: 1,

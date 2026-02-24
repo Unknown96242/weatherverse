@@ -9,8 +9,7 @@ class WeatherService {
   static const String _baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
 
   static const List<String> _allCities = [
-    'Dakar', 'Thiès', 'Saint-Louis', 'Ziguinchor', 'Kaolack',
-    'Mbour', 'Diourbel', 'Tambacounda', 'Louga', 'Touba',
+    'Dakar', 'Thiès', 'Saint-Louis', 'Ziguinchor', 'Touba',
     'Kolda', 'Matam', 'Fatick', 'Sédhiou', 'Kédougou',
   ];
 

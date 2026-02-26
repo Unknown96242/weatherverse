@@ -7,6 +7,7 @@ import '../model/city_weather.dart';
 class WeatherService {
   static const String _apiKey = '***REMOVED***';
   static const String _baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
+  static const String _baseUrlForcast = 'https://api.openweathermap.org/data/2.5/forecast';
 
   static const List<String> _allCities = [
     'Dakar', 'Thiès', 'Saint-Louis', 'Ziguinchor', 'Touba',
@@ -58,4 +59,6 @@ class WeatherService {
     // Si statut != 200, on lance aussi une erreur claire
     throw Exception('Statut ${response.statusCode} pour $city');
   }
+
+
 }

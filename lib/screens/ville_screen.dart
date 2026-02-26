@@ -7,13 +7,16 @@ import 'package:meteo/components/navigation_button.dart';
 import 'package:meteo/model/city_weather.dart';
 import 'package:meteo/screens/home_screen.dart';
 import 'package:meteo/screens/loader_screen.dart';
+import 'package:meteo/screens/map_screen.dart';
 import 'package:meteo/theme/app_colors.dart';
 import 'package:meteo/theme/theme_provider.dart';
 import 'package:meteo/utils/images_constants.dart';
 import 'package:meteo/utils/utils_function.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:weather_icons/weather_icons.dart';
+
 
 class VilleScreen extends StatefulWidget {
   const VilleScreen({super.key});
@@ -130,11 +133,11 @@ class _VilleScreenState extends State<VilleScreen>
           onTap: () => {UtilsFunction.navigation(context, HomeScreen())},
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
+              shape: BoxShape.circle,
               color: AppColors.glassDark.withOpacity(.2),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(15),
               child: Icon(CupertinoIcons.arrow_left),
             ),
           ),
@@ -146,85 +149,88 @@ class _VilleScreenState extends State<VilleScreen>
   }
 
   Widget cityShow(BuildContext context, CityWeather c) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(22),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
-
-              // 🎨 Dégradé sombre translucide
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF1E2A47).withOpacity(0.30),
-                  Color(0xFF111827).withOpacity(0.20),
+    return InkWell(
+      onTap: ()=>UtilsFunction.navigation(context, MapScreen(cityWeather: c,)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(22),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+      
+                // 🎨 Dégradé sombre translucide
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF1E2A47).withOpacity(0.30),
+                    Color(0xFF111827).withOpacity(0.20),
+                  ],
+                ),
+      
+                // ✨ Fine light border comme sur l'image
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.12),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Image.network(c.iconUrl,width: 50,height: 50,),
+                      const SizedBox(width: 14),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            c.city,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            c.condition,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        "${c.temperature}°",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "↑${c.tempMax}° ↓${c.tempMin}°",
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-
-              // ✨ Fine light border comme sur l'image
-              border: Border.all(
-                color: Colors.white.withOpacity(0.12),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Image.network(c.iconUrl,width: 50,height: 50,),
-                    const SizedBox(width: 14),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          c.city,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          c.condition,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "${c.temperature}°",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "↑${c.tempMax}° ↓${c.tempMin}°",
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
             ),
           ),
         ),
@@ -289,7 +295,7 @@ class _VilleScreenState extends State<VilleScreen>
           AnimatedBuilder(
             animation: _glowAnim,
             builder: (context, _) {
-              return GestureDetector(
+              return InkWell(
                 onTap: () => context.read<ThemeProvider>().toggle(),
                 child: Container(
                   width: 38,

@@ -58,7 +58,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         //backgroundColor: Colors.black26.withOpacity(.7),
         context: context,
         elevation: 1,
-        backgroundColor: !_isDark ? _cardBg : null,
         builder: (context) => _buildBottomSheet(),
       );
     });
@@ -91,6 +90,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                 ),
                 child: TileLayer(
                   urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  userAgentPackageName: 'com.weatherverse.app',
                 ),
               ),
               MarkerLayer(
@@ -147,6 +147,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       padding: EdgeInsetsGeometry.all(10),
       width: MediaQuery.of(context).size.width,
       child: SingleChildScrollView(
+        // physics: ClampingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           spacing: 20,
@@ -160,6 +161,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
               ),
             ),
             GridView.count(
+              physics: ClampingScrollPhysics(),
               crossAxisSpacing: 20,
               mainAxisSpacing: 20,
               crossAxisCount: 2,

@@ -235,14 +235,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ? RepaintBoundary(
           key: const ValueKey('globe'),
           child: ModelViewer(
-            src: 'assets/models/earth_compressed.glb',
+            src: 'assets/models/earth.glb',
             alt: 'Globe terrestre 3D',
             autoPlay: true,
             autoRotate: true,
             autoRotateDelay: 0,
-            rotationPerSecond: '6deg',
+            rotationPerSecond: '30deg',
             cameraOrbit: '0deg 90deg 105%',
-            cameraControls: false,
+            cameraControls: true,
             disablePan: true,
             disableZoom: true,
             shadowIntensity: 0.3,

@@ -8,22 +8,22 @@ import 'package:provider/provider.dart';
 import 'theme/theme_provider.dart';
 
 void main() {
-  runApp(
-    DevicePreview(
-      enabled: !kReleaseMode,
-      builder: (context) => ChangeNotifierProvider(
-        create: (_) => ThemeProvider(),
-        child: const WeatherVerseApp(),
-      ),
-    ),
-  );
+  // runApp(
+  //   DevicePreview(
+  //     enabled: !kReleaseMode,
+  //     builder: (context) => ChangeNotifierProvider(
+  //       create: (_) => ThemeProvider(),
+  //       child: const WeatherVerseApp(),
+  //     ),
+  //   ),
+  // );
 
-  /**runApp(
+  runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
       child: const WeatherVerseApp(),
     ),
-  );**/
+  );
 }
 
 class WeatherVerseApp extends StatefulWidget {

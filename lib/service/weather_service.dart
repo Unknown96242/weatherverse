@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import '../model/city_weather.dart';
 
 class WeatherService {
-  static const String _apiKey = '***REMOVED***';
+  static final String _apiKey = dotenv.env['API_TOKEN']??'';
   static const String _baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
   // static const String _baseUrlForcast = 'https://api.openweathermap.org/data/2.5/forecast';
 
